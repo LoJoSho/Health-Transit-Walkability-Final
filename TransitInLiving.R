@@ -16,8 +16,10 @@ rm(list = ls())
 
 if (!file.exists("data/finalizeddata.rds")) {
   df <- vroom::vroom("data/Citizen_Connect_-_County_data__live_.csv")
+  cost_of_living <- vroom::vroom('data/us_cost_of_living.csv')
   
-  df <- df %>% filter(df$Variable == '')
+  df <- df %>% filter(df$Year == 2019)
+  df_transit_use <- df %>% filter(df$Variable == 'Commute by public transportation')
   
   saveRDS(df, 'data/finalizeddata.rds')
 } else {
