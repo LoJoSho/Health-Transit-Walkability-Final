@@ -140,7 +140,9 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$plot_01 <- renderPlot({
     ggplot(df, aes_string(x = input$X, y = input$Y, colour = input$Splitby)) +
-      geom_point(na.rm = FALSE)
+      geom_point(na.rm = FALSE) + 
+      scale_x_continuous(labels = scales::comma) +
+      scale_y_continuous(labels = scales::comma)
   })
   
   output$table_01 <- DT::renderDataTable(df[, c(input$X, input$Y, input$Splitby)], 
