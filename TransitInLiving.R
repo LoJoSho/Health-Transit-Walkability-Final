@@ -109,11 +109,13 @@ if (!file.exists("data/finalizeddata.rds")) {
 }
 
 col_names <- colnames(df)
-
+df <- df %>%
+  separate(County, into = c("County"), sep = ",")
 County_Transit_Cost_Summary <- df %>%
   filter(family_member_count == '2p2c') %>%
   group_by(County, State, Transit_Commuters, Total_Commuters, total_cost) %>%
   summarise()
+
 State_Transit_Cost <- df %>%
   filter(family_member_count == '2p2c') %>%
   group_by(State) %>%
@@ -121,9 +123,10 @@ State_Transit_Cost <- df %>%
             Sum_Transit_Commuters = sum(Transit_Commuters, na.rm = TRUE),
             Avg_Transportation_Cost = mean(transportation_cost, na.rm = TRUE))
 State_Transit_Cost$Sum_Transit_Commuters <- as.numeric(as.character(State_Transit_Cost$ Sum_Transit_Commuters))
+
 County_Transit_Cost_Summary <- County_Transit_Cost_Summary %>%
   mutate(Transit_Percentage = (Transit_Commuters / Total_Commuters) * 100)
-# Used for leaflet
+
 df_aggregated <- df %>%
   group_by(County, State, Longitude, Latitude) %>%
   summarise(
@@ -151,26 +154,52 @@ ui <- fluidPage(
                    column(12, plotOutput("sandboxPlot")),
                  ),
                  fluidRow(
-                 column(6, DT::dataTableOutput("table_01", width = "100%")),
-               ))
+                   column(6, DT::dataTableOutput("table_01", width = "100%")),
+                 ))
              )
     ),
-    tabPanel("Important Findings", 
+    tabPanel("Important Findings 1", 
              fluidPage(
-               titlePanel("Important FIndings"),
+               titlePanel("Important Findings"),
                mainPanel(
                  fluidRow(
-                   p("A collection of important findings"),
+                   p("Transit Commuters vs. Total Cost of Living"),
+                   column(12, plotOutput("plot_01")),
+                   p("- The percentage of transit commuters is quite low, mostly below 5% across the US."),
+                   p("- People with a cost of living below $100,000 were more likely to take transit transportation.")
+                 ),
+                 fluidRow(
+                   p("Average Transportation Cost by State"),
                    column(12, plotOutput("plot_02")),
+                   p("- California, Utah, Colorado, and Nevada are states with the highest average transportation cost."),
+                   p("- Louisiana, Mississippi, and New York had low average transportation cost.")
                  ),
-                 fluidRow(
-                   column(12, plotOutput("plot_03")),
-                 ),
-                 fluidRow(
-                   column(12, plotOutput("plot_04")),
-                 ),
+                 
                )
              )),
+    tabPanel("Important findings 2",
+             fluidPage(
+               titlePanel("Important Findings 1"),
+               mainPanel(
+                 fluidRow(
+                   p("Number of Transit Commuters by State"),
+                   column(12, plotOutput("plot_03")),
+                   p("- New York has the highest number of transit commuters with over 2 million transit commuters. Moreover, California and Illinois also take second and third place for most transit commuters since they all have biggest cities in the US."),
+                   p("- Louisiana and Alaska are the two states with the lowest transit commuters."),
+                   p("- According to the previous graph, some states, such as New York or New Jersey, prefer public transit since they have low average transportation costs and a high number of transit commuters."),
+                   p("- From the above statement, we can consider increasing the number of transit transportation in states that have high transportation costs and few transit commuters. However, we still need to consider the cost of living in those states.")
+                 ),
+                 fluidRow(
+                   p("Average Total Cost of Living by State"),
+                   column(12, plotOutput("plot_04")),
+                   p("- The states with highest total cost of living are Massachusetts and Hawaii."),
+                   p("- The states with the lowest total cost of living are Mississippi, Arkansas, South Carolina."),
+                   p("- Some states such as New York, Illinois, and California have maximized the use of transit transportation with low transportation costs, a low total cost of livings and high transit commuters."),
+                   p("- From these data, Arkansas, Wyoming or Vermont state should develop transit transport to lower transportation costs and total cost of living.")
+                 )
+               )
+             )),
+  
     tabPanel("Leaflet", 
              fluidPage(
                titlePanel("Leaflet from Data"),
@@ -188,13 +217,13 @@ server <- function(input, output) {
   output$sandboxPlot <- renderPlot({
     ggplot(df, aes_string(x = input$X, y = input$Y, colour = input$Splitby)) +
       geom_point(na.rm = FALSE) 
-      #scale_x_continuous(labels = scales::comma) +
-      #scale_y_continuous(labels = scales::comma)
+    #scale_x_continuous(labels = scales::comma) +
+    #scale_y_continuous(labels = scales::comma)
   })
   output$table_01 <- DT::renderDataTable(df[, c(input$X, input$Y, input$Splitby)], 
                                          options = list(pageLength = 25))
-  
-  output$plot_02 <- renderPlot({
+  #Line chart of Transit Commuters vs. Total Cost of Living  
+  output$plot_01 <- renderPlot({
     ggplot(County_Transit_Cost_Summary, aes(x = Transit_Percentage, y = total_cost)) +
       geom_point(color = "blue") +
       geom_smooth(method = "lm", se = FALSE, color = "red") +
@@ -203,7 +232,18 @@ server <- function(input, output) {
            y = "Total Cost of Living") +
       theme_minimal()
   })
-  
+  #Bar chart of Average Transportation Cost by State
+  output$plot_02 <- renderPlot({
+    ggplot(State_Transit_Cost, aes(x = Avg_Transportation_Cost, y = State)) +
+      geom_bar(stat = "identity", fill = "skyblue") +
+      labs(
+        title = "Average Transportation Cost by State",
+        x = "State",
+        y = "Average Transportation Cost"
+      ) +
+      theme_minimal() 
+  })
+  #Bar chart with Number of Transit Commuters by State
   output$plot_03 <- renderPlot({
     ggplot(State_Transit_Cost, aes(x = Sum_Transit_Commuters, y = State)) +
       geom_bar(stat = "identity", fill = "#0066CC") +
@@ -215,19 +255,29 @@ server <- function(input, output) {
       theme_minimal()+
       scale_x_continuous(labels = scales::number_format(scale = 1e-3, big.mark = ","))
   })
-  
-  output$leaflet <- renderLeaflet({
-      leaflet(df_aggregated) %>%
-        addTiles() %>%
-        addMarkers(
-          lng = ~Longitude,
-          lat = ~Latitude,
-          popup = ~paste("Number of transit Commuters:", Transit_Commuters, "<br>County: ", County, "<br>State: ", State),
-          clusterOptions = markerClusterOptions()
-        ) 
+  #Bar chart of Average Total Cost of Living by State
+  output$plot_04 <- renderPlot({
+    ggplot(State_Transit_Cost, aes(x = Avg_Total_Cost, y = State)) +
+      geom_bar(stat = "identity", fill = "#0066CC") +
+      labs(
+        title = "Average Total Cost of Living by State",
+        x = "Average Total Cost of Living",
+        y = "State"
+      ) +
+      theme_minimal()
   })
-
+  #Map Leaflet with County, State, Number of transit commuters, and total cost of living
+  output$leaflet <- renderLeaflet({
+    leaflet(df_aggregated) %>%
+      addTiles() %>%
+      addMarkers(
+        lng = ~Longitude,
+        lat = ~Latitude,
+        popup = ~paste("Number of transit Commuters:", Transit_Commuters, "<br>County: ", County, "<br>State: ", State),
+        clusterOptions = markerClusterOptions()
+      ) 
+  })
+  
 }
 
 shinyApp(ui, server)
-
