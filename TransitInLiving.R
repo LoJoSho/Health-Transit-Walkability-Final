@@ -276,6 +276,31 @@ ui <- fluidPage(
                  ))
                ))
              ),
+    tabPanel("Research",
+             fluidPage(
+               titlePanel("Transportation Essay"),
+               mainPanel(
+                 h3("Our research compared to others"),
+                 p("For our project we looked at two different examples of research. Both research papers tried to link the need of public transportation to income and cost of living. These studies took information from various major cities around America. They looked at the cost of living and income at the rich and poor sides of each city. Our first paper Transportation needs of low income population: a policy analysis for the Washington D.C. metropolitan region. In this paper they examined D.C.’s transportation. They mainly focused on families. This relates to our project. We not only had a focus on family, but also the size of the family as well. The findings in this paper not only revealed public transportation use, but also various forms of transportation. This includes walking, biking, and car ride passengers. Something that was not really present in our data was the car ownership amount. In D.C. their research found that average family in low income neighborhoods did not own a car. On the other hand, families in high income areas owned on average almost two cars. This causes many lower income families to use public transportation because they cannot afford their own vehicle. In the second paper, they examined similar topics like us. One of the many points we look into was cost of transportation. In Why do the poor live in cities? The role of public transportation the researchers sought out to find wheter or not cost of transportation  as well as cost of other things played a role in the amount of people who took public transportation. This paper researched many major cities over the United States. Some of these cities are Chicago, Philadelphia, and New York. Their findings showed that cost of transportation did not play a role in whether or not people used public transportation more or less. This finding does not agree with the observations we made in our data. We concluded that lower cost of transportation likely influcneced the decision to take public transportation. I believe that our findings seem to be different because of the location of the studies, as well as the many variables such as distance from jobs they included in their study." ),
+                 h4("Citations"),
+                 p("Glaeser, Edward L., et al. “Why do the poor live in cities? the role of public transportation.” Journal of Urban Economics, vol. 63, no. 1, Jan. 2008, pp. 1–24, https://doi.org/10.1016/j.jue.2006.12.004.
+                    Serulle, Nayel Urena, and Cinzia Cirillo. “Transportation needs of low income population: A policy analysis for the Washington D.C. Metropolitan Region.” Public Transport, vol. 8, no. 1, 3 Feb. 2016, pp. 103–123, https://doi.org/10.1007/s12469-015-0119-2")
+               )
+             )
+    ),
+    tabPanel("Why and requirements",
+             fluidPage(
+               titlePanel("Paragraph on why and requirements"),
+               mainPanel(
+                 h3("Why followed by requirements "),
+                 p("As college students the cost of things is important to us. Many college students do not have cars on campus. Unfortunately, like many places in America, the Quad Cities are not walkable. Therefore, lots of students depend on public transportation to travel throughout the Quad Cities.  This made us think of how many people also depend on transportation in the United States. We know that the cost of living impacts how much money a family can spend. Ideally, a family could afford a vehicle to commute if the cost of living is cheap in a city. We decided to do a deep dive into whether the cost of living and public transportation users have any evidence of correlation. Our project looks into trends in public transportation. Furthermore, we infer as to why certain decisions are being made. Optimistically, our project can help decision-makers make better choices about transportation. "),
+                 p("The biggest and most important requirement was to collect and transform data from all 50 states. That entails renaming columns, separating each state, and making new data frames. This includes data from counties and minor cities. Without all states, our data would be incomplete, and concluding using that data would be irresponsible. Another major requirement is cross-referencing the cost of living with the location of the city. A lot of this data overlapped in many ways. Multiple cities belonged to the same county and state all with similar names. Making sure the data overlapped in ways they were supposed to, and stopping them from overlapping in areas they should not was vital to success. Calculation proved to be important as well. Taking the cost of living from different categories added an extra layer of depth to our work. The different sizes of families impacted the cost of living as well.  This required us to take into account the different sizes of families. To take into the true impact of the cost of living. We looked into the exact location of places as well. This entails including the longitude as well as the latitude for each town. Lastly, we need to look at trends in our data. Looking at the results helped us with the next part of our project. Making an accurate prediction model includes recognizing patterns in our data. Without pattern recognition building a model would be inaccurate and useless as a result.")
+                 
+               )
+               
+             )
+             
+    ),
     # Setup the sandbox
     tabPanel("Sandbox", 
              fluidPage(
@@ -336,6 +361,13 @@ ui <- fluidPage(
                  )
                )
              )),
+    tabPanel("Data Leaflet", 
+             fluidPage(
+               titlePanel("Data Leaflet"),
+               fluidRow(
+                 leafletOutput("leaflet")
+               )
+          )),
     # Preidction Engine
     tabPanel("Prediction Engine", 
              fluidPage(
