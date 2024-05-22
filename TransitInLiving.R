@@ -363,11 +363,13 @@ ui <- fluidPage(
              )),
     tabPanel("Data Leaflet", 
              fluidPage(
-               titlePanel("Data Leaflet"),
-               fluidRow(
-                 leafletOutput("leaflet")
+               titlePanel("Leaflet from Data"),
+               mainPanel(
+                 fluidRow(
+                   column(12, leaflet::leafletOutput("leaflet"))
+                 )
                )
-          )),
+             )),
     # Preidction Engine
     tabPanel("Prediction Engine", 
              fluidPage(
