@@ -9,7 +9,7 @@ library(leaflet.extras)
 library(randomForest)
 
 # Sets working directory
-setwd('C:/Users/stick/Documents/GitHub/Health-Transit-Walkability-Final')
+#setwd('C:/Users/stick/OneDrive/Documents/GitHub/Health-Transit-Walkability-Final')
 # Clear Variables
 rm(list = ls())
 
@@ -88,6 +88,8 @@ if (!file.exists("data/finalizeddata.rds")) {
   df <- df %>% rename_at('Value', ~'Transit_Commuters')
   df <- df %>% rename_at('Denominator', ~'Total_Commuters')
   
+  df$PercentageTransit <- (df$Transit_Commuters / df$Total_Commuters)
+  
   # Handle Cost of Living
   # Resolve an issue with a lack of uppercase in cost of living
   cost_of_living <- cost_of_living %>% rename_at('county', ~'County')
@@ -134,6 +136,15 @@ df_aggregated <- df %>%
     family_member_count = paste(family_member_count, ":", total_cost, collapse = "; ")
   ) %>%
   ungroup()
+
+# Prediction Engine:
+training_data <- df %>% 
+  filter(family_member_count == '2p2c') %>%
+  sample_n(1000, replace = FALSE)
+
+model_lat <- randomForest(Latitude ~ median_family_income, data = training_data)
+model_lon <- randomForest(Longitude ~ median_family_income, data = training_data)
+
 
 ui <- fluidPage(
   # Application title
@@ -275,7 +286,7 @@ ui <- fluidPage(
                    #column(1, selectInput("sandboxPlotShow", "Show Plot", c("No", "Yes"), "No")),
                    column(2,
                           selectInput("X", "Choose X", col_names, col_names[4]),
-                          selectInput("Y", "Choose Y", col_names, col_names[4]),
+                          selectInput("Y", "Choose Y", col_names, col_names[18]),
                           selectInput("Splitby", "Split By", col_names, col_names[2])),
                    column(12, plotOutput("sandboxPlot")),
                  ),
@@ -325,21 +336,63 @@ ui <- fluidPage(
                  )
                )
              )),
-  
-    tabPanel("Leaflet", 
+    # Preidction Engine
+    tabPanel("Prediction Engine", 
              fluidPage(
-               titlePanel("Leaflet from Data"),
-               mainPanel(
-                 fluidRow(
-                   column(12, leaflet::leafletOutput("leaflet"))
+               titlePanel("Prediction"), 
+               p("Predict, if you have a certain income, where you should live"),
+               sidebarLayout(
+                 sidebarPanel(
+                   # Input panel for time
+                   numericInput("Income", "Enter your income:", value = 14000, min = 0),
+                 ),
+                 mainPanel(
+                   textOutput("result_lat"),
+                   textOutput("result_lon"),
+                   leafletOutput("predict_leaflet"),
                  )
                )
-             ))
-    
+             )
+    )
   )
 )
 
 server <- function(input, output) {
+  calculate_position <- reactive({
+    # Predict latitude and longitude
+    lat <- predict(model_lat, newdata = data.frame(median_family_income = input$Income))
+    lon <- predict(model_lon, newdata = data.frame(median_family_income = input$Income))
+    
+    # Return position and address
+    return(list(lat = lat, lon = lon))
+  })
+  
+  # Prediction Engine Stuff
+  output$result_lat <- renderText({
+    pos <- calculate_position()
+    result_text <- paste("Latitude: ", pos$lat)
+  })
+  output$result_lon <- renderText({
+    pos <- calculate_position()
+    result_text <- paste("Longitude: ", pos$lon)
+  })
+  
+  output$predict_leaflet <- renderLeaflet({
+    # Predict latitude and longitude
+    position <- calculate_position()
+    
+    # Create leaflet map
+    leaflet(position) %>%
+      addTiles() %>%
+      addMarkers(
+        lng = ~lon,
+        lat = ~lat,
+        popup = ~paste("Lat:", lat, "<br>Lon:", lon),
+        clusterOptions = markerClusterOptions
+      )
+  })
+  
+  
   output$sandboxPlot <- renderPlot({
     ggplot(df, aes_string(x = input$X, y = input$Y, colour = input$Splitby)) +
       geom_point(na.rm = FALSE) 
