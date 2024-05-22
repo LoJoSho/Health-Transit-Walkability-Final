@@ -139,6 +139,132 @@ ui <- fluidPage(
   # Application title
   titlePanel("Transit In Living Data"),
   tabsetPanel(
+    tabPanel("Documentation",
+             fluidPage(
+               titlePanel("Documentation"),
+               mainPanel(
+                 fluidRow(
+                   column(12,
+                          h2("Scope of Project")
+                   )
+                 ),
+                 fluidRow(
+                   column(12,
+                          h3("Group Members"),
+                          p("Logan Schulz"),
+                          p("Quang Nguyen"),
+                          p("Kevin Akins")
+                          
+                   )
+                 ),
+                 fluidRow(
+                   column(12,
+                          h3("Project Title"),
+                          h4("Analyzing the Relationship Between Transit Commuters and Cost of Living"))
+                 ),
+                 fluidRow(
+                   column(12,
+                          h3("Project Objectives"),
+                          p("1. To analyze the correlation between the number of transit commuters and the cost of living in various counties and states."),
+                          p("2. To identify patterns and trends in transportation costs and cost of living across different regions."),
+                          p("3. To visualize the data to facilitate understanding and decision-making.")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Deliverables"),
+                          p("1. Data Preparation:"),
+                          p("- Cleaned and formatted dataset including county, state, and various cost metrics."),
+                          p("- Separation of county and state into distinct columns."),
+                          p("- Aggregated data to summarize average costs by state and county."),
+                          p("2. Analysis and Visualizations:"),
+                          p("- Bar charts showing the number of transit commuters, average total cost of living, and transportation costs by state."),
+                          p("- Line charts or alternative visualizations if bar charts are not suitable due to data volume."),
+                          p("- Summary statistics and insights derived from the data analysis."),
+                          p("3. Documentation:"),
+                          p("- Detailed report on the methodology used for data cleaning, aggregation, and analysis."),
+                          p("- Interpretation of the visualizations and statistical results."),
+                          p("- Recommendations based on the findings.")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Tasks and Activities"),
+                          p("1. Data Collection and Cleaning:"),
+                          p("- Gather data and filter on transit commuters, cost of living components (transportation), and demographic information."),
+                          p("- Clean the data to remove inconsistencies and errors."),
+                          p("- Split combined county and state fields into separate columns."),
+                          p("2. Data Aggregation:"),
+                          p("- Calculate average costs and other relevant metrics by state."),
+                          p("- Summarize the total number of transit commuters by state."),
+                          p("3. Data Visualization:"),
+                          p("- Create visualizations such as bar charts and line charts to represent the data."),
+                          p("- Use geospatial tools to visualize data on maps, showing the distribution of transit commuters and cost of living by region."),
+                          p("- Ensure visualizations are clear, informative, and properly labeled."),
+                          p("4. Analysis and Interpretation:"),
+                          p("- Perform statistical analysis to identify correlations and patterns."),
+                          p("- Interpret the results to draw meaningful conclusions."),
+                          p("5. Reporting:"),
+                          p("- Compile findings into a comprehensive report."),
+                          p("- Include visualizations, statistical analysis, and recommendations.")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Exclusions"),
+                          p("- Analysis of non-transit commuter data."),
+                          p("- Costs not directly related to living expenses (housing, food, healthcare, etc.).")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Constraints"),
+                          p("- Timeframe for project completion: 2 weeks.")
+                          
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Assumptions"),
+                          p("- All required data will be available and accessible."),
+                          p("- Data will be accurate and up-to-date.")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Risks"),
+                          p("- Potential data quality issues."),
+                          p("- Misinterpretation of complex data patterns.")
+                   )
+                 ),
+                 
+                 fluidRow(
+                   column(12,
+                          h3("Timeline"),
+                          p("1. Week 1: Data Collection and Cleaning, Data Visualization and Analysis, and Research"),
+                          p("2. Week 2: Reporting and Documentation")
+                   )
+                 ),
+                 fluidRow(
+                   column(12,
+                          h3("Backlog of ideas"),
+                          p("- Filter Data to only include transit use"),
+                          p("- Join data together based on counties & state"),
+                          p("- Chart with number of transit commuters with states and total cost of living"),
+                          p("- Chart with transportation cost with each state"),
+                          p("- Leaflet map with state and number of transit commuters"),
+                          p("- Add interpretations of what we found in the Shinny App"),
+                          p("- Prediction Model"),
+                          p("- Find Research Model - Write Summary - Connect it with our data")
+                 ))
+               ))
+             ),
     # Setup the sandbox
     tabPanel("Sandbox", 
              fluidPage(
